@@ -1,6 +1,6 @@
 # FreeCAD AI Bridge
 
-A lightweight local HTTP server that lets any AI assistant (ChatGPT, Claude, DeskPilot, Cursor, or custom agents) control **FreeCAD** via Python commands. No MCP protocol required — just plain HTTP + JSON.
+A lightweight local HTTP server that lets any AI assistant control **FreeCAD** via Python commands. No MCP protocol required — just plain HTTP + JSON.
 
 ## How It Works
 
@@ -21,16 +21,16 @@ The bridge runs as a background thread inside FreeCAD. All FreeCAD API calls are
 
 ## Installation
 
-1. Copy `DeskPilotBridge.py` to your FreeCAD macro folder:
+1. Copy `freecad_ai_bridge.py` to your FreeCAD macro folder:
    - **Windows:** `%APPDATA%\FreeCAD\Macro\`
    - **Linux:** `~/.local/share/FreeCAD/Macro/`
    - **macOS:** `~/Library/Application Support/FreeCAD/Macro/`
 
-2. Open FreeCAD → **Macro → Macros…** → select `DeskPilotBridge` → **Run**
+2. Open FreeCAD → **Macro → Macros…** → select `freecad_ai_bridge` → **Run**
 
 3. Check the **Report view** (bottom panel) for:
    ```
-   DeskPilot Bridge v2 started on port 8765
+   FreeCAD AI Bridge started on port 8765
    ```
 
 That's it. The bridge is now listening on `http://localhost:8765`.
@@ -58,7 +58,7 @@ All commands are sent as `POST http://localhost:8765/command` with a JSON body.
 {"ok": false, "error": "message", "traceback": "..."}
 ```
 
-### Examples
+### Example
 
 **Check connection:**
 ```bash
@@ -67,59 +67,26 @@ curl -X POST http://localhost:8765/command \
   -d '{"cmd": "status"}'
 ```
 
-**Create a box:**
-```python
-import requests
-r = requests.post("http://localhost:8765/command", json={
-    "cmd": "run_python",
-    "code": """
-import FreeCAD, Part
-doc = FreeCAD.newDocument("Test")
-box = Part.makeBox(50, 30, 20)
-obj = doc.addObject("Part::Feature", "Box")
-obj.Shape = box
-doc.recompute()
-result = f"Created {box.Volume} mm³"
-"""
-})
-print(r.json())
-```
-
-**Take a screenshot:**
-```python
-r = requests.post("http://localhost:8765/command", json={
-    "cmd": "screenshot", "width": 1200, "height": 900
-})
-import base64
-img = base64.b64decode(r.json()["result"]["image_base64"])
-open("view.png", "wb").write(img)
-```
-
-**Export to STL:**
-```python
-r = requests.post("http://localhost:8765/command", json={
-    "cmd": "export", "doc": "Test", "fmt": "stl",
-    "path": r"C:\models\test.stl"
-})
-```
-
 ## Using with AI Assistants
 
-Tell your AI:
+**Most any local or cloud AI model can connect.** Just tell your AI what you want 3D modeled and it will build it for you in FreeCAD. The bridge is model-agnostic — it's a plain HTTP API that works with anything that can execute code or make HTTP requests:
+
+- **Local models:** Ollama (LLaMA, Mistral, etc.), LM Studio, llama.cpp
+- **Cloud models:** ChatGPT (Code Interpreter), Claude (Tool Use), Gemini
+- **IDE agents:** Cursor, Copilot, Windsurf
+- **Custom agents:** Python scripts, Node.js, etc.
+
+All you need to tell your AI is:
 
 > "There is a local HTTP API at `http://localhost:8765/command`. Send POST requests with JSON bodies. The main command is `{"cmd": "run_python", "code": "..."}` which executes Python inside FreeCAD. Use `{"cmd": "screenshot"}` to see the 3D view. Use `{"cmd": "export"}` to save files."
 
-Works with any AI that can execute code or make HTTP requests:
-- ChatGPT (Code Interpreter)
-- Claude (Tool Use / Artifacts)
-- Cursor / Copilot
-- Custom agents (Python, Node.js, etc.)
+Then just describe what you want: *"Make a mounting bracket, 80×40mm, 4 corner holes, 1mm fillets"* — and your AI will write the FreeCAD Python, push it through the bridge, verify with a screenshot, and export the STL for printing.
 
 ## Files
 
 | File | Purpose |
 |------|---------|
-| `DeskPilotBridge.py` | The FreeCAD macro (core server) |
+| `freecad_ai_bridge.py` | The FreeCAD macro (core server) |
 | `freecad_client.js` | Node.js client example |
 | `activate_freecad.ps1` | Windows helper to bring FreeCAD to foreground |
 

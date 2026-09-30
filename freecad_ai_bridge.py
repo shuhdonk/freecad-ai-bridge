@@ -1,5 +1,5 @@
 """
-DeskPilot Bridge for FreeCAD (v2 - Thread-Safe)
+FreeCAD AI Bridge for FreeCAD (v2 - Thread-Safe)
 ================================================
 A lightweight local HTTP server that lets DeskPilot control FreeCAD.
 All FreeCAD API calls are dispatched to the MAIN thread via QTimer
@@ -7,7 +7,7 @@ to avoid deadlocks (FreeCAD's Python API is NOT thread-safe).
 
 Usage:
   1. In FreeCAD: Macro -> Macros... -> select DeskPilotBridge -> Run
-  2. Check the Report view (bottom panel) for "DeskPilot Bridge started"
+  2. Check the Report view (bottom panel) for "FreeCAD AI Bridge started"
   3. DeskPilot sends JSON commands over HTTP to localhost:8765.
 
 Commands (POST /command, JSON body):
@@ -56,7 +56,7 @@ def _execute_on_main(cmd, req):
         _response_queue.put({"ok": True, "result": result})
     except Exception as e:
         err = traceback.format_exc()
-        print(f"[DeskPilotBridge] Error in {cmd}:\n{err}")
+        print(f"[FreeCAD AIBridge] Error in {cmd}:\n{err}")
         _response_queue.put({"ok": False, "error": str(e), "traceback": err})
 
 
@@ -203,8 +203,8 @@ def start_bridge():
     start_bridge._timer = timer
     start_bridge._server = server
 
-    print("[DeskPilotBridge] v2 started on port 8765 (thread-safe)")
-    Gui.addLogMessage("DeskPilot Bridge v2 started on port 8765")
+    print("[FreeCAD AIBridge] v2 started on port 8765 (thread-safe)")
+    Gui.addLogMessage("FreeCAD AI Bridge v2 started on port 8765")
 
 
 start_bridge()
