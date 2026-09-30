@@ -80,7 +80,7 @@ All you need to tell your AI is:
 
 > "There is a local HTTP API at `http://localhost:8765/command`. Send POST requests with JSON bodies. The main command is `{"cmd": "run_python", "code": "..."}` which executes Python inside FreeCAD. Use `{"cmd": "screenshot"}` to see the 3D view. Use `{"cmd": "export"}` to save files."
 
-Then just describe what you want: *"Make a mounting bracket, 80×40mm, 4 corner holes, 1mm fillets"* — and your AI will write the FreeCAD Python, push it through the bridge, verify with a screenshot, and export the STL for printing.
+Then just describe what you want: *"Make a mounting bracket, 80×40mm, 4 corner holes, 1mm fillets"* — and your AI will write the FreeCAD Python and build it in your FreeCAD instance.
 
 ## Files
 
