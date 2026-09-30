@@ -1,0 +1,6 @@
+# Generated files
+*.stl
+*.png
+*.jpg
+STL/
+__pycache__/
